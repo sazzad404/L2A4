@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { ITechnician } from "./technician.interface";
+import { bookingStatus } from "../../../prisma/generated/prisma/enums";
 
 const getTechnicianFromDB = async () => {
   const getProfile = await prisma.technicianProfile.findMany({
@@ -66,73 +67,108 @@ const updateTechnicianProfileIntoDB = async (
 
 const updateTechnicianAvailabilityIntoDB = async (
   userId: string,
-    availability: string[]
+  availability: string[],
 ) => {
-
   const technician = await prisma.technicianProfile.findUniqueOrThrow({
-    where:{
-      userId
-    }
-  })
+    where: {
+      userId,
+    },
+  });
 
   const result = await prisma.technicianProfile.update({
-    where:{
-      id: technician.id
+    where: {
+      id: technician.id,
     },
-    data:{
-      availability:{
-        set: availability
-      }
+    data: {
+      availability: {
+        set: availability,
+      },
     },
-    include:{
-      user:{
-        omit:{
-          password: true
-        }
-      }
-    }
-  })
+    include: {
+      user: {
+        omit: {
+          password: true,
+        },
+      },
+    },
+  });
 
-  return result
+  return result;
 };
 
-
-const getBookingsFromDB= async(userId : string)=>{
-
+const getBookingsFromDB = async (userId: string) => {
   const technician = await prisma.technicianProfile.findUniqueOrThrow({
-    where:{
-      userId
-    }
-
-    
-  })
+    where: {
+      userId,
+    },
+  });
 
   const result = await prisma.booking.findMany({
-    where:{
-      technicianId: technician.id
+    where: {
+      technicianId: technician.id,
     },
-    orderBy:{
-      createdAt: "desc"
+    orderBy: {
+      createdAt: "desc",
     },
-    include:{
+    include: {
       service: true,
       customer: {
-        omit:{
-          password: true
-        }
+        omit: {
+          password: true,
+        },
       },
-    
     },
+  });
 
-  })
+  return result;
+};
 
-  return result
-}
+const updateBookingStatusById = async (
+  userId: string,
+  bookingId: string,
+  bookingStatus: bookingStatus,
+) => {
+  const technician = await prisma.technicianProfile.findUniqueOrThrow({
+    where: {
+      userId,
+    },
+  });
+
+  const booking = await prisma.booking.findUniqueOrThrow({
+    where: {
+      id: bookingId,
+    },
+  });
+
+  if (booking.technicianId !== technician.id) {
+    throw new Error("Forbidden! You can't update this booking");
+  }
+
+  const result = await prisma.booking.update({
+    where: {
+      id: bookingId,
+    },
+    data: {
+      status: bookingStatus,
+    },
+    include: {
+      customer: {
+        omit: {
+          password: true,
+        },
+      },
+      service: true,
+    },
+  });
+
+  return result;
+};
 
 export const technicianService = {
   getTechnicianFromDB,
   getTechnicianByidFromDB,
   updateTechnicianProfileIntoDB,
   updateTechnicianAvailabilityIntoDB,
-  getBookingsFromDB
+  getBookingsFromDB,
+  updateBookingStatusById,
 };

@@ -23,4 +23,10 @@ router.get(
   technicianController.bookingsTechnician,
 );
 
+router.patch(
+  "/bookings/:id",
+  auth("TECHNICIAN"),
+  technicianController.updateBookingStatus,
+);
+
 export const technicianRouter = router;

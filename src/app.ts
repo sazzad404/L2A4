@@ -6,6 +6,7 @@ import globalErrorHandler from "./utilities/globalErrorHandler";
 import { authRouter } from "./modules/auth/auth.route";
 import { technicianRouter} from "./modules/technician/technician.route";
 import { servicesRouter } from "./modules/services/services.route";
+import { bookingRouter } from "./modules/booking/booking.route";
 
 const app: Application = express()
 
@@ -26,6 +27,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", authRouter);
 app.use("/api/technician", technicianRouter);
 app.use("/api/services", servicesRouter)
+app.use("/api/bookings", bookingRouter)
 
 
 

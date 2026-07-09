@@ -98,10 +98,35 @@ const bookingsTechnician = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const bookingId = req.params.id;
+  const {status} = req.body
+
+  const result = await technicianService.updateBookingStatusById(
+    userId,
+    bookingId as string,
+    status
+  );
+
+    sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Technician Booking Update Successfully",
+    data: result,
+  });
+});
+
 export const technicianController = {
   getTechnician,
   getTechnicianByid,
   updateTechnicianProfile,
   updateTechnicianAvailability,
   bookingsTechnician,
+  updateBookingStatus,
 };
