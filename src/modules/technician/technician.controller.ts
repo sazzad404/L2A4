@@ -7,6 +7,7 @@ import { Payload } from "@prisma/client/runtime/client";
 import { JwtPayload } from "jsonwebtoken";
 import sendResponse from "../../utilities/sendResponse";
 import httpStatus from "http-status";
+import { ITechnician } from "./technician.interface";
 
 const getTechnician = catchAsync(async (req: Request, res: Response) => {
   const technicianProfile = await technicianService.getTechnicianFromDB();
@@ -20,26 +21,46 @@ const getTechnician = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getTechnicianByid = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
 
-  const {id} = req.params
-
-  if(!id ){
+  if (!id) {
     throw new Error("Technician id required in params");
-    
   }
-  
 
-  const result = await technicianService.getTechnicianByid(id as string)
-   sendResponse(res, {
+  const result = await technicianService.getTechnicianByidFromDB(id as string);
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Technician Profile Retrived Successfully",
     data: result,
   });
-
 });
+
+const updateTechnicianProfile = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const Payload = req.body;
+
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const result = await technicianService.updateTechnicianProfileIntoDB(
+      userId,
+      Payload,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Technician Profile Update Successfully",
+      data: result,
+    });
+  },
+);
 
 export const technicianController = {
   getTechnician,
   getTechnicianByid,
+  updateTechnicianProfile,
 };

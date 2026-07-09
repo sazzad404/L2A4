@@ -11,7 +11,7 @@ model TechnicianProfile {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    location String?
+    location String? @default("DHAKA")
     services Service[]
     reviews Review[]
     bookings Booking[]

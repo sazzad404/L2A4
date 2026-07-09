@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { ITechnician } from "./technician.interface";
 
 const getTechnicianFromDB = async () => {
   const getProfile = await prisma.technicianProfile.findMany({
     include: {
       user: {
-        omit:{
-            password: true
-        }
+        omit: {
+          password: true,
+        },
       },
     },
   });
@@ -15,7 +16,7 @@ const getTechnicianFromDB = async () => {
   return getProfile;
 };
 
-const getTechnicianByid = async (id: string) => {
+const getTechnicianByidFromDB = async (id: string) => {
   try {
     const result = await prisma.technicianProfile.findUniqueOrThrow({
       where: {
@@ -23,21 +24,51 @@ const getTechnicianByid = async (id: string) => {
       },
       include: {
         user: {
-            omit:{
-                password: true
-            }
+          omit: {
+            password: true,
+          },
         },
       },
     });
 
-    return result
+    return result;
   } catch (error) {
     throw new Error("Not Found");
-    
   }
+};
+
+const updateTechnicianProfileIntoDB = async (
+  userId: string,
+  payload: ITechnician,
+) => {
+  const technician = await prisma.technicianProfile.findUniqueOrThrow({
+    where:{
+      userId
+    }
+  });
+
+  
+
+  const result = await prisma.technicianProfile.update({
+    where:{
+      id: technician.id
+    },
+    data: payload,
+    include:{
+      user:{
+        omit:{
+          password: true
+        }
+      }
+    }
+  })
+
+
+  return result;
 };
 
 export const technicianService = {
   getTechnicianFromDB,
-  getTechnicianByid,
+  getTechnicianByidFromDB,
+  updateTechnicianProfileIntoDB,
 };

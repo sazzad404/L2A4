@@ -7,7 +7,7 @@ import { SignOptions } from "jsonwebtoken";
 import { Role } from "../../../prisma/generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: any) => {
-  const { name, email, password, role } = payload;
+  const { name, email, password, role , location} = payload;
 
   try {
     const isUserExist = await prisma.user.findUnique({
@@ -32,6 +32,7 @@ const registerUserIntoDB = async (payload: any) => {
           email,
           password: hashedPassword,
           role: role || Role.CUSTOMER,
+          
         },
       });
 
@@ -42,6 +43,7 @@ const registerUserIntoDB = async (payload: any) => {
             skills: [],
             experience: 1,
             bio: "",
+            location
           },
         });
       }
