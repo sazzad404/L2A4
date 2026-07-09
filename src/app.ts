@@ -30,6 +30,7 @@ app.use("/api/technician", technicianRouter);
 app.use("/api/services", servicesRouter)
 app.use("/api/bookings", bookingRouter)
 app.use("/api/categories", categoryRouter)
+app.use("/api/admin")
 
 
 
