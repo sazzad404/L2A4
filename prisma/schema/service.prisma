@@ -1,0 +1,18 @@
+model Service {
+    id String @id @default(uuid())
+    categoryId String
+    category Category @relation(fields: [categoryId], references: [id])
+    technicianId String
+    technician TechnicianProfile @relation(fields: [technicianId], references: [id])
+    title String @db.VarChar(255)
+    price Decimal @db.Decimal(10, 2)
+    description String @db.Text
+
+    bookings Booking[]
+
+
+
+
+
+    @@map("services")
+}
