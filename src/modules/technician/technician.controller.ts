@@ -59,8 +59,49 @@ const updateTechnicianProfile = catchAsync(
   },
 );
 
+const updateTechnicianAvailability = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new Error("Unauthorized!");
+    }
+
+    const result = await technicianService.updateTechnicianAvailabilityIntoDB(
+      userId,
+      req.body.availability,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Technician availablity Profile Update Successfully",
+      data: result,
+    });
+  },
+);
+
+const bookingsTechnician = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized!");
+  }
+
+  const result = await technicianService.getBookingsFromDB(userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Technician Bookings Retrived Successfully",
+    data: result,
+  });
+});
+
 export const technicianController = {
   getTechnician,
   getTechnicianByid,
   updateTechnicianProfile,
+  updateTechnicianAvailability,
+  bookingsTechnician,
 };

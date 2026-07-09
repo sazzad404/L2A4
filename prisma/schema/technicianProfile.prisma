@@ -8,16 +8,16 @@ model TechnicianProfile {
     experience Int?
     bio String?
     rating Float? @default(0)
+    location String? @default("DHAKA")
+
+    availability String[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    location String? @default("DHAKA")
     services Service[]
     reviews Review[]
     bookings Booking[]
-    
-
-
 
 
     @@map("technician_profiles")

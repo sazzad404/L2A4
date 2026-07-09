@@ -42,18 +42,48 @@ const updateTechnicianProfileIntoDB = async (
   payload: ITechnician,
 ) => {
   const technician = await prisma.technicianProfile.findUniqueOrThrow({
+    where: {
+      userId,
+    },
+  });
+
+  const result = await prisma.technicianProfile.update({
+    where: {
+      id: technician.id,
+    },
+    data: payload,
+    include: {
+      user: {
+        omit: {
+          password: true,
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
+const updateTechnicianAvailabilityIntoDB = async (
+  userId: string,
+    availability: string[]
+) => {
+
+  const technician = await prisma.technicianProfile.findUniqueOrThrow({
     where:{
       userId
     }
-  });
-
-  
+  })
 
   const result = await prisma.technicianProfile.update({
     where:{
       id: technician.id
     },
-    data: payload,
+    data:{
+      availability:{
+        set: availability
+      }
+    },
     include:{
       user:{
         omit:{
@@ -63,12 +93,46 @@ const updateTechnicianProfileIntoDB = async (
     }
   })
 
-
-  return result;
+  return result
 };
+
+
+const getBookingsFromDB= async(userId : string)=>{
+
+  const technician = await prisma.technicianProfile.findUniqueOrThrow({
+    where:{
+      userId
+    }
+
+    
+  })
+
+  const result = await prisma.booking.findMany({
+    where:{
+      technicianId: technician.id
+    },
+    orderBy:{
+      createdAt: "desc"
+    },
+    include:{
+      service: true,
+      customer: {
+        omit:{
+          password: true
+        }
+      },
+    
+    },
+
+  })
+
+  return result
+}
 
 export const technicianService = {
   getTechnicianFromDB,
   getTechnicianByidFromDB,
   updateTechnicianProfileIntoDB,
+  updateTechnicianAvailabilityIntoDB,
+  getBookingsFromDB
 };
