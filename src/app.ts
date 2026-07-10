@@ -12,6 +12,7 @@ import { adminRouter } from "./modules/admin/admin.route";
 import { reviewRouter } from "./modules/reviews/reviews.route";
 import { subscriptionRouter } from "./modules/subscription/subscruption.route";
 import { subscriptionController } from "./modules/subscription/subscription.controller";
+import { premiumRouter } from "./modules/premium/premium.route";
 
 const app: Application = express();
 
@@ -93,6 +94,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/subscription", subscriptionRouter);
+app.use("/api/premium", premiumRouter);
 
 app.use(globalErrorHandler);
 export default app;
