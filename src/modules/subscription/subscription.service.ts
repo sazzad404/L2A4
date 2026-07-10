@@ -12,15 +12,19 @@ const createCheckoutSession = async (userId: string) => {
       },
     });
 
-    const customer = await stripe.customers.create({
-      email: user.email,
-      name: user.name,
-      metadata: {
-        userId: user.id,
-      },
-    });
+    let stripeCustomerId = user.subscriptions?.stripeCustomerId;
 
-    
+    if (!stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.name,
+        metadata: {
+          userId: user.id,
+        },
+      });
+
+      stripeCustomerId = customer.id;
+    }
   });
 };
 
