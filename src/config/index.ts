@@ -12,6 +12,10 @@ export default {
   jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
   jwt_refresh_expiration: process.env.JWT_REFRESH_EXPIRES_IN,
   jwt_access_expiration: process.env.JWT_ACCESS_EXPIRES_IN,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
+  stripe_product_key: process.env.STRIPE_PRODUCT_KEY!,
+
+
   
   
 };

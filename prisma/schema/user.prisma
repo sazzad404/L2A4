@@ -12,6 +12,7 @@ model User {
     reviews Review[]
 
     bookings Booking[]
+    subscriptions Subscription?
   
 
 
