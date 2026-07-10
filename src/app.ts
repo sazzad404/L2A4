@@ -11,7 +11,7 @@ import { categoryRouter } from "./modules/category/category.route";
 import { adminRouter } from "./modules/admin/admin.route";
 import { reviewRouter } from "./modules/reviews/reviews.route";
 import { subscriptionRouter } from "./modules/subscription/subscruption.route";
-import { stripe } from "./lib/stripe";
+import { subscriptionController } from "./modules/subscription/subscription.controller";
 
 const app: Application = express();
 
@@ -65,10 +65,10 @@ const app: Application = express();
 //   },
 // );
 
-app.use(
-  "/api/subscriptions/webhook",
+app.post(
+  "/api/subscription/webhook",
   express.raw({ type: "application/json" }),
- 
+  subscriptionController.handleWebhook,
 );
 
 app.use(express.json());

@@ -2,6 +2,11 @@ import Stripe from "stripe";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import { stripe } from "../../lib/stripe";
+import { SubscriptionStatus } from "../../../prisma/generated/prisma/enums";
+import {
+  handleChangeSubscription,
+  handleCheckOutCompleted,
+} from "./subscription.utils";
 
 const createCheckoutSession = async (userId: string) => {
   const transactionResult = await prisma.$transaction(async (tx) => {
@@ -63,56 +68,43 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
 
   switch (event.type) {
     case "checkout.session.completed":
-      console.log(event.data.object);
-
-      const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.metadata?.userId;
-      const stripeCustomerId = session.customer;
-      const subscriptionId = session.subscription as string;
-
-      if (!userId || !stripeCustomerId || !subscriptionId) {
-        throw new Error("Invalid session");
-      }
-
-      const StripeSubscription =
-        await stripe.subscriptions.retrieve(subscriptionId);
-      console.log("sub info", StripeSubscription);
-
-      const currentPeriodEndMiliSec =
-        StripeSubscription.items.data[0]?.current_period_end;
-
-      const cuurentPeriodEnd = new Date(currentPeriodEndMiliSec! * 1000);
-
-      console.log(cuurentPeriodEnd);
-
-      await prisma.subscription.upsert({
-        where: {
-          userId,
-        },
-        create: {
-          userId,
-          stripeCustomerId,
-          stripeSubscriptionId: subscriptionId,
-          
-        },
-        update: {},
-      });
+      await handleCheckOutCompleted(event.data.object);
       break;
     case "customer.subscription.updated":
-      // Then define and call a method to handle the successful attachment of a PaymentMethod.
-      // handlePaymentMethodAttached(paymentMethod);
+      await handleChangeSubscription(event.data.object);
       break;
 
     case "customer.subscription.deleted":
+      await handleChangeSubscription(event.data.object);
       break;
-    default:
-      // Unexpected event type
-      console.log(`No Event Matched. Unhandled event type ${event.type}.`);
 
+    default:
+      console.log(`No Event Matched. Unhandled event type ${event.type}.`);
       break;
   }
 };
+
+const getSubscriptionStatus = async (userId: string) => {
+  const isSubscriptionExists = await prisma.subscription.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  const isActive =
+    isSubscriptionExists?.status === SubscriptionStatus.ACTIVE &&
+    isSubscriptionExists?.currentPeriodEnd &&
+    new Date(isSubscriptionExists?.currentPeriodEnd) > new Date();
+
+    return {
+      status: isSubscriptionExists?.status,
+      isSubscribed : isActive,
+      currentPeriodEnd: isSubscriptionExists?.currentPeriodEnd,
+    }
+};
+
 export const subscriptionService = {
   createCheckoutSession,
   handleWebhook,
+  getSubscriptionStatus
 };
