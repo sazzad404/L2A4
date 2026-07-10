@@ -12,6 +12,8 @@ model Subscription {
     // stripe related ids
 
     stripeCustomerId String @unique
+
+    stripeSubscriptionId String @unique
     
 
 

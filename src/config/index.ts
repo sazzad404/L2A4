@@ -15,4 +15,5 @@ export default {
 
   stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
   stripe_price_id: process.env.STRIPE_PRICE_ID!,
+  stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET!,
 };
