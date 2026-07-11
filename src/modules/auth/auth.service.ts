@@ -7,7 +7,7 @@ import { SignOptions } from "jsonwebtoken";
 import { Role } from "../../../prisma/generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: any) => {
-  const { name, email, password, role , location} = payload;
+  const { name, email, password, role, location } = payload;
 
   try {
     const isUserExist = await prisma.user.findUnique({
@@ -26,13 +26,15 @@ const registerUserIntoDB = async (payload: any) => {
     );
 
     const result = await prisma.$transaction(async (tx) => {
+      if (role === Role.ADMIN) {
+        throw new Error("You are not allowed to register as Admin");
+      }
       const createUser = await tx.user.create({
         data: {
           name,
           email,
           password: hashedPassword,
           role: role || Role.CUSTOMER,
-          
         },
       });
 
@@ -43,7 +45,7 @@ const registerUserIntoDB = async (payload: any) => {
             skills: [],
             experience: 1,
             bio: "",
-            location
+            location,
           },
         });
       }
@@ -84,7 +86,7 @@ const registerUserIntoDB = async (payload: any) => {
     //   },
     // });
 
-    return result
+    return result;
   } catch (error) {
     throw error;
   }
