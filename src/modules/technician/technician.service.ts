@@ -97,12 +97,19 @@ const updateTechnicianAvailabilityIntoDB = async (
 };
 
 const getBookingsFromDB = async (userId: string) => {
-  const technician = await prisma.technicianProfile.findUniqueOrThrow({
+  throw new Error("BOOKING API TEST");
+  console.log("useridd", userId);
+  const technician = await prisma.technicianProfile.findUnique({
     where: {
       userId,
     },
   });
 
+  console.log("technician :", technician);
+
+  if (!technician) {
+    throw new Error("Technician profile not found");
+  }
   const result = await prisma.booking.findMany({
     where: {
       technicianId: technician.id,

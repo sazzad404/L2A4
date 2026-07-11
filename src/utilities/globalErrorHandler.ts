@@ -1,14 +1,15 @@
 import { ErrorRequestHandler } from "express";
-import httpStatus from "http-status"
+import httpStatus from "http-status";
 
+const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  console.error(err);
 
-const globalErrorHandler: ErrorRequestHandler= (err, req, res, next) => {
-
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: "Internal Server Error",
-        error: err.message,
-    });
-}
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+    error: err.message,
+    stack: err.stack,
+  });
+};
 
 export default globalErrorHandler;

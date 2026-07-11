@@ -82,7 +82,9 @@ const updateTechnicianAvailability = catchAsync(
 );
 
 const bookingsTechnician = catchAsync(async (req: Request, res: Response) => {
+  
   const userId = req.user?.id;
+  console.log(req.user)
 
   if (!userId) {
     throw new Error("Unauthorized!");
