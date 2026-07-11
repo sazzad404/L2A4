@@ -97,7 +97,6 @@ const updateTechnicianAvailabilityIntoDB = async (
 };
 
 const getBookingsFromDB = async (userId: string) => {
-  throw new Error("BOOKING API TEST");
   console.log("useridd", userId);
   const technician = await prisma.technicianProfile.findUnique({
     where: {

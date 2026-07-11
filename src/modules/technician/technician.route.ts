@@ -5,7 +5,7 @@ import { auth } from "../../middlewares/auth";
 const router = Router();
 
 router.get("/", technicianController.getTechnician);
-router.get("/:id", technicianController.getTechnicianByid);
+
 router.put(
   "/profile",
   auth("TECHNICIAN"),
@@ -22,6 +22,8 @@ router.get(
   auth("TECHNICIAN"),
   technicianController.bookingsTechnician,
 );
+
+router.get("/:id", technicianController.getTechnicianByid);
 
 router.patch(
   "/bookings/:id",
